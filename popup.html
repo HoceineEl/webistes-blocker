@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>FocusBlocker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-alt: #f3f4f6;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+        }
+
+        body {
+            width: 350px;
+            margin: 0;
+            padding: 1rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg-alt);
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .session-card {
+            background: var(--bg-alt);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .session-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .session-title {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .session-status {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            background: var(--success);
+            color: white;
+        }
+
+        .session-status.inactive {
+            background: var(--text-light);
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--primary);
+        }
+
+        .duration-select {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .duration-btn {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) / 2);
+            background: var(--bg);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .duration-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .duration-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .custom-duration {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .custom-duration input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.875rem;
+        }
+
+        .hard-mode {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--bg-alt);
+            border-radius: calc(var(--radius) / 2);
+        }
+
+        .hard-mode input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .verification-input {
+            display: none;
+            margin-bottom: 1rem;
+        }
+
+        .verification-input.visible {
+            display: block;
+        }
+
+        .verification-input input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .verification-input .error {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: var(--radius);
+            background: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .action-btn.stop {
+            background: var(--danger);
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) / 2);
+            background: var(--bg);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="ri-shield-flash-line"></i>
+            FocusBlocker
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value" id="focusTime">0h</div>
+            <div class="stat-label">Focus Time</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="blockedCount">0</div>
+            <div class="stat-label">Blocked</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="streak">0</div>
+            <div class="stat-label">Streak</div>
+        </div>
+    </div>
+
+    <div class="session-card">
+        <div class="session-header">
+            <h3 class="session-title">Focus Session</h3>
+            <div class="session-status" id="sessionStatus">Inactive</div>
+        </div>
+
+        <div class="timer" id="timer">00:00:00</div>
+
+        <div id="sessionControls">
+            <div class="duration-select">
+                <button class="duration-btn" data-duration="25">25m</button>
+                <button class="duration-btn" data-duration="45">45m</button>
+                <button class="duration-btn" data-duration="60">60m</button>
+            </div>
+
+            <div class="custom-duration">
+                <input type="number" id="customDuration" placeholder="Custom duration (minutes)" min="1">
+            </div>
+
+            <div class="hard-mode">
+                <input type="checkbox" id="hardMode">
+                <label for="hardMode">Hard Mode (requires verification to stop)</label>
+            </div>
+
+            <button class="action-btn" id="startBtn">
+                <i class="ri-play-line"></i>
+                Start Session
+            </button>
+        </div>
+
+        <div id="verificationInput" class="verification-input">
+            <p>Type this phrase to stop the session:</p>
+            <div id="verificationPhrase" class="verification-phrase"></div>
+            <input type="text" id="verificationText" placeholder="Type the phrase exactly">
+            <div id="verificationError" class="error"></div>
+            <button class="action-btn stop" id="stopBtn">
+                <i class="ri-stop-line"></i>
+                Stop Session
+            </button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button class="footer-btn" id="settingsBtn">
+            <i class="ri-settings-3-line"></i>
+            Settings
+        </button>
+        <button class="footer-btn" id="groupsBtn">
+            <i class="ri-folder-shield-2-line"></i>
+            Groups
+        </button>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Block Groups - FocusBlocker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-alt: #f3f4f6;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-alt);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i {
+            color: var(--primary);
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .group-card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .group-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .group-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .website-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .website-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: var(--bg-alt);
+            border-radius: calc(var(--radius) / 2);
+            margin-bottom: 0.5rem;
+        }
+
+        .website-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .website-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .website-domain {
+            font-weight: 500;
+        }
+
+        .add-group {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: var(--bg-alt);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag i {
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .tag i:hover {
+            color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: var(--bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 0.5rem;
+            color: var(--text);
+        }
+
+        .empty-state p {
+            margin: 0;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .groups-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="ri-folder-shield-2-line"></i> Block Groups</h1>
+            <button class="btn btn-primary" id="createGroupBtn">
+                <i class="ri-add-line"></i>
+                Create New Group
+            </button>
+        </div>
+
+        <div class="add-group" id="addGroupForm" style="display: none;">
+            <div class="form-group">
+                <label class="form-label">Group Name</label>
+                <input type="text" class="form-input" id="groupName" placeholder="e.g., Social Media, Entertainment">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Add Websites</label>
+                <div class="website-input-group">
+                    <input type="text" class="form-input" id="websiteInput"
+                        placeholder="Enter domain (e.g., facebook.com) and press Enter">
+                </div>
+                <div class="tag-list" id="websiteList"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Time Limit (minutes)</label>
+                <input type="number" class="form-input" id="timeLimit" min="1" value="60">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" id="saveGroupBtn">
+                    <i class="ri-save-line"></i>
+                    Save Group
+                </button>
+            </div>
+        </div>
+
+        <div class="groups-grid" id="groupsContainer">
+            <!-- Groups will be inserted here -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="ri-folder-add-line"></i>
+            <h3>No Block Groups Yet</h3>
+            <p>Create your first group to start managing blocked websites more effectively.</p>
+            <button class="btn btn-primary" id="createFirstGroupBtn">
+                <i class="ri-add-line"></i>
+                Create First Group
+            </button>
+        </div>
+    </div>
+
+    <script src="groups.js"></script>
+</body>
+
+</html>

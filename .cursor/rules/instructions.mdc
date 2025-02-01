@@ -1,0 +1,131 @@
+---
+description: 
+globs: 
+---
+/* .cursorrules for “FocusBlocker” Chrome Extension */
+
+/*
+  You are an expert in Chrome extension development, JavaScript, HTML, CSS, and Chrome APIs.
+  Your task is to build a Chrome extension that blocks distracting websites and enforces customizable time limits per website.
+  The extension must support:
+    - A user-configurable blocklist with URL patterns and associated time limits.
+    - Blocking sessions that can be started/stopped via a popup UI.
+    - Persistent storage of settings using chrome.storage.
+    - Dynamic blocking using the declarativeNetRequest API.
+    - Background logic to manage alarms/timers and update rules accordingly.
+    - An options page for full configuration.
+*/
+
+/* Rule: ManifestV3 & Permissions */
+"ManifestV3": {
+  "description": "Use Manifest Version 3. Require permissions: declarativeNetRequest, storage, alarms, scripting, activeTab.",
+  "implementation": "Create a manifest.json with the following key sections:",
+  "example": {
+    "manifest_version": 3,
+    "name": "FocusBlocker",
+    "version": "1.0.0",
+    "description": "Block distracting websites with custom time limits and sessions.",
+    "permissions": [
+      "declarativeNetRequest",
+      "storage",
+      "alarms",
+      "scripting",
+      "activeTab"
+    ],
+    "host_permissions": [
+      "<all_urls>"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "options_page": "options.html",
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
+}
+
+/* Rule: Background Logic */
+"BackgroundLogic": {
+  "description": "Implement a background service worker that loads user settings, updates dynamic blocking rules using chrome.declarativeNetRequest, and manages blocking sessions via alarms.",
+  "steps": [
+    "On startup, read blocklist and session settings from chrome.storage.local.",
+    "Convert each block entry (with URL pattern and time limit) into a declarativeNetRequest rule.",
+    "Listen for chrome.alarms events to track session durations and adjust rules when time limits expire.",
+    "Accept messages from the options page and popup to update settings or start/stop a session."
+  ],
+  "implementation": "Write background.js as an ES6 module using async/await. Use inline comments for clarity."
+}
+
+/* Rule: Options UI */
+"OptionsUI": {
+  "description": "Create an options page (options.html + options.js) for users to add, edit, or remove block entries and set time limits for each website.",
+  "steps": [
+    "Build a form that accepts a URL pattern and a time limit (in minutes or hours).",
+    "Validate the URL input and time limit value.",
+    "On form submission, save the updated blocklist to chrome.storage.local.",
+    "Optionally allow scheduling of blocking sessions."
+  ]
+}
+
+/* Rule: Popup UI */
+"PopupUI": {
+  "description": "Create a popup page (popup.html + popup.js) to quickly control blocking sessions.",
+  "steps": [
+    "Display current session status and remaining time.",
+    "Provide buttons to start or stop a blocking session.",
+    "Send messages to the background script via chrome.runtime.sendMessage to change session state."
+  ]
+}
+
+/* Rule: Storage & Data Persistence */
+"Storage": {
+  "description": "Persist user settings in chrome.storage.local.",
+  "dataStructure": {
+    "blocklist": "An array of objects, each with properties: urlPattern (string), timeLimit (number in minutes), and optionally sessionActive (boolean).",
+    "session": "An object tracking the current session state (active/inactive, remaining time, etc.)."
+  }
+}
+
+/* Rule: Dynamic Blocking & Alarms */
+"BlockingLogic": {
+  "description": "When a session is active, update dynamic rules via chrome.declarativeNetRequest.updateDynamicRules.",
+  "steps": [
+    "For each website in the blocklist, create a rule with an id, priority, and URL filter matching the pattern.",
+    "When a blocking session starts, add these rules; when it ends or a time limit is reached, remove them.",
+    "Use chrome.alarms.create to schedule removals or periodic checks."
+  ]
+}
+
+/* Rule: Messaging & Error Handling */
+"MessagingErrorHandling": {
+  "description": "Implement robust message passing between popup/options and the background script, and include error handling (e.g., notify users if a rule update fails).",
+  "steps": [
+    "Use chrome.runtime.sendMessage and chrome.runtime.onMessage for inter-component communication.",
+    "Wrap asynchronous calls in try/catch blocks and optionally use chrome.notifications API to inform users of errors."
+  ]
+}
+
+/* Rule: Code Style & Best Practices */
+"CodeStyle": {
+  "description": "Write clean, modular ES6+ JavaScript with inline comments. Use functional programming patterns, separate concerns into different files (manifest.json, background.js, options.js, popup.js), and test the extension in Chrome.",
+  "notes": [
+    "Ensure no variables from outer scopes leak into content scripts.",
+    "Follow Manifest V3 guidelines and use declarativeNetRequest for blocking."
+  ]
+}
+
+/* Step-by-Step Summary:
+   1. Create manifest.json as specified in ManifestV3 rule.
+   2. Develop background.js to:
+       - Load settings from chrome.storage.
+       - Convert blocklist entries into dynamic rules.
+       - Manage alarms to enforce time limits.
+       - Listen for messages to update sessions.
+   3. Build an Options page (options.html/options.js) for adding/editing website block entries.
+   4. Build a Popup page (popup.html/popup.js) to control sessions.
+   5. Use chrome.storage.local for persistent settings.
+   6. Test inter-component messaging and dynamic rule updates.
+*/
+
+/* End of .cursorrules file */

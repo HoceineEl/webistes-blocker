@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>FocusBlocker Settings</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .blocklist {
+            margin-bottom: 20px;
+        }
+
+        .blocklist-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .blocklist-item input {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .blocklist-item input[type="number"] {
+            flex: 1;
+            width: 100px;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .add-form input {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .add-form input[type="number"] {
+            flex: 1;
+            width: 100px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .add-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .remove-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: #ffebee;
+            color: #c62828;
+            display: block;
+        }
+
+        .website-selector {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .website-selector select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .url-format-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .url-format-toggle label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .separator {
+            margin: 20px 0;
+            border-top: 1px solid #eee;
+            text-align: center;
+            position: relative;
+        }
+
+        .separator span {
+            background: #fff;
+            padding: 0 10px;
+            color: #666;
+            position: relative;
+            top: -12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Blocked Websites Configuration</h1>
+
+        <!-- Popular Websites Selector -->
+        <div class="website-selector">
+            <h3>Quick Add Popular Websites</h3>
+            <select id="popularWebsites">
+                <option value="">Select a website...</option>
+                <optgroup label="Social Media">
+                    <option value="facebook.com">Facebook</option>
+                    <option value="instagram.com">Instagram</option>
+                    <option value="twitter.com">Twitter</option>
+                    <option value="tiktok.com">TikTok</option>
+                    <option value="linkedin.com">LinkedIn</option>
+                </optgroup>
+                <optgroup label="Entertainment">
+                    <option value="youtube.com">YouTube</option>
+                    <option value="netflix.com">Netflix</option>
+                    <option value="twitch.tv">Twitch</option>
+                    <option value="reddit.com">Reddit</option>
+                </optgroup>
+                <optgroup label="Gaming">
+                    <option value="steam.com">Steam</option>
+                    <option value="epicgames.com">Epic Games</option>
+                    <option value="roblox.com">Roblox</option>
+                </optgroup>
+                <optgroup label="Shopping">
+                    <option value="amazon.com">Amazon</option>
+                    <option value="ebay.com">eBay</option>
+                    <option value="aliexpress.com">AliExpress</option>
+                </optgroup>
+            </select>
+            <div class="url-format-toggle">
+                <label>
+                    <input type="radio" name="urlFormat" value="domain" checked>
+                    Domain only (e.g., facebook.com)
+                </label>
+                <label>
+                    <input type="radio" name="urlFormat" value="pattern">
+                    Full pattern (e.g., *://*.facebook.com/*)
+                </label>
+            </div>
+            <button class="add-btn" id="quickAddBtn">Quick Add Selected Website</button>
+        </div>
+
+        <div class="separator">
+            <span>OR ADD CUSTOM WEBSITE</span>
+        </div>
+
+        <!-- Custom Website Input -->
+        <div class="add-form">
+            <input type="text" id="newPattern"
+                placeholder="Enter website (e.g., facebook.com or *://*.facebook.com/*)" />
+            <input type="number" id="newTimeLimit" placeholder="Time limit (minutes)" min="1" />
+            <button class="add-btn" id="addBtn">Add Website</button>
+        </div>
+
+        <div class="help-text">
+            URL format examples:
+            <ul>
+                <li><strong>Domain only:</strong> facebook.com, youtube.com</li>
+                <li><strong>Full pattern:</strong> *://*.facebook.com/*, *://reddit.com/*</li>
+                <li>Use domain-only format for simpler blocking of entire domains</li>
+                <li>Use full pattern format for more specific control</li>
+            </ul>
+        </div>
+
+        <div id="blocklist" class="blocklist">
+            <!-- Blocklist items will be inserted here -->
+        </div>
+
+        <button class="save-btn" id="saveBtn">Save Changes</button>
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+    <script src="options.js"></script>
+</body>
+
+</html>
