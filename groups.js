@@ -138,14 +138,12 @@ function renderGroups() {
                     ${group.isPredefined ? '<span class="predefined-badge">Predefined</span>' : ''}
                 </h3>
                 <div class="group-actions">
-                    <button class="btn ${group.active ? 'btn-danger' : 'btn-primary'} toggle-group-btn">
-                        ${group.active ? '<i class="ri-pause-line"></i> Pause' : '<i class="ri-play-line"></i> Start'}
+                    <button class="btn btn-primary add-group-to-blocklist" title="Add entire group to blocklist">
+                        <i class="ri-add-line"></i> Add to Blocklist
                     </button>
-                    ${!group.isPredefined ? `
-                        <button class="btn btn-danger delete-group-btn">
-                            <i class="ri-delete-bin-line"></i>
-                        </button>
-                    ` : ''}
+                    <button class="btn ${group.active ? 'btn-danger' : 'btn-primary'} toggle-group-btn">
+                        ${group.active ? 'Deactivate' : 'Activate'}
+                    </button>
                 </div>
             </div>
             <div class="website-list">
@@ -155,12 +153,19 @@ function renderGroups() {
                             <img class="website-icon" src="https://www.google.com/s2/favicons?domain=${website}" alt="${website}">
                             <span class="website-domain">${website}</span>
                         </div>
-                        <span class="website-time">${group.timeLimit}m</span>
+                        <div class="website-actions">
+                            <button class="btn btn-sm btn-primary add-to-blocklist" data-website="${website}" title="Add to blocklist">
+                                <i class="ri-add-line"></i>
+                            </button>
+                        </div>
                     </div>
                 `).join('')}
             </div>
         </div>
     `).join('');
+
+    // Add event listeners for the new buttons
+    addBlocklistButtonListeners();
 }
 
 // Event delegation for group actions
@@ -285,24 +290,19 @@ async function toggleGroup(index) {
         const group = groups[index];
         group.active = !group.active;
 
-        console.log('Group after toggle:', group);
-
-        // Save to storage first
-        await saveGroups();
+        // Save groups first
+        await chrome.storage.local.set({ [STORAGE_KEYS.BLOCK_GROUPS]: groups });
 
         // Get current session status
-        const { session } = await chrome.storage.local.get(STORAGE_KEYS.SESSION);
+        const { session = { active: false } } = await chrome.storage.local.get(STORAGE_KEYS.SESSION);
 
-        // If session is active, update blocking rules immediately
-        if (session && session.active) {
-            await chrome.runtime.sendMessage({
-                type: 'UPDATE_BLOCKLIST',
-                blocklist: groups.filter(g => g.active).flatMap(g => g.websites)
-            });
+        // If session is active, update blocking rules
+        if (session.active) {
+            await chrome.runtime.sendMessage({ type: 'UPDATE_BLOCK_GROUPS' });
         }
 
         renderGroups();
-        showSuccess(group.active ? 'Group activated' : 'Group deactivated');
+        showSuccess(`Group ${group.active ? 'activated' : 'deactivated'}`);
     } catch (error) {
         console.error('Error toggling group:', error);
         showError('Failed to toggle group');
@@ -450,6 +450,62 @@ async function initializePredefinedGroups() {
         console.error('Error initializing predefined groups:', error);
         showError('Failed to load predefined groups');
     }
+}
+
+// Add new function to handle blocklist additions
+async function addToBlocklist(websites, timeLimit = 60) {
+    try {
+        const { blocklist = [] } = await chrome.storage.local.get(STORAGE_KEYS.BLOCKLIST);
+
+        // Convert websites to array if single string
+        const websiteArray = Array.isArray(websites) ? websites : [websites];
+
+        // Add new websites to blocklist
+        const newBlocklist = [...blocklist];
+        websiteArray.forEach(website => {
+            const urlPattern = `*://*.${website}/*`;
+            if (!newBlocklist.some(item => item.urlPattern === urlPattern)) {
+                newBlocklist.push({
+                    urlPattern,
+                    timeLimit
+                });
+            }
+        });
+
+        // Save updated blocklist
+        await chrome.storage.local.set({ [STORAGE_KEYS.BLOCKLIST]: newBlocklist });
+
+        // Update blocking rules if session is active
+        const { session = { active: false } } = await chrome.storage.local.get(STORAGE_KEYS.SESSION);
+        if (session.active) {
+            await chrome.runtime.sendMessage({ type: 'UPDATE_BLOCKLIST' });
+        }
+
+        showSuccess('Added to blocklist successfully');
+    } catch (error) {
+        console.error('Error adding to blocklist:', error);
+        showError('Failed to add to blocklist');
+    }
+}
+
+// Add new function to set up blocklist button listeners
+function addBlocklistButtonListeners() {
+    // Individual website buttons
+    document.querySelectorAll('.add-to-blocklist').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const website = e.currentTarget.dataset.website;
+            addToBlocklist(website);
+        });
+    });
+
+    // Entire group buttons
+    document.querySelectorAll('.add-group-to-blocklist').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const groupIndex = e.currentTarget.closest('.group-card').dataset.groupIndex;
+            const group = groups[groupIndex];
+            addToBlocklist(group.websites);
+        });
+    });
 }
 
 // Initialize on load
